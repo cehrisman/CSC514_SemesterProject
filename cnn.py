@@ -62,7 +62,6 @@ def train(num_epochs, cnn, loaders):
         for i, (images, labels) in enumerate(loaders):
 
             output = cnn(images)
-            # print(torch.max(b_y, 0)[1])
             loss = loss_func(output, labels)
             optimizer.zero_grad()
             loss.backward()
