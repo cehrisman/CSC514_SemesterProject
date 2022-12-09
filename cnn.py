@@ -6,19 +6,12 @@ Assignment - Semester Project - Text Transcription from images
 This file hosts the CNN class to classify text in images
 """
 
-import numpy as np
 import torch
 import torchvision
-import matplotlib.pyplot as plt
 from PIL import Image, ImageOps
 from torch.utils.data import Dataset
 from torch import nn, optim
-from torch.autograd import Variable
-import pandas as pd
-from torchvision.io import read_image
 import glob
-import cv2
-import os
 
 
 class CNN(nn.Module):
@@ -117,7 +110,6 @@ def classify(cnn, loader):
                 text = [predictions.item()]
                 letter = [alpha_dict[predictions.item()] for x in text]
                 f.write(letter[0])
-
 
 
 class CustomImageDataSet(Dataset):
