@@ -40,14 +40,14 @@ class CNN(nn.Module):
         return nn.Sequential(
             nn.Conv2d(in_num, out_num, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(out_num),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
 
     def global_avg_pool(self, in_num, out_num):
         return nn.Sequential(
             nn.Conv2d(in_num, out_num, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(out_num),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             nn.AdaptiveAvgPool2d((1, 1)))
 
 

@@ -23,25 +23,27 @@ def bound_region(image_path):
     img = cv2.imread(image_path + '\Boxed_ROIs{}.jpg'.format(file_num))
     while img is not None:
         img = cv2.resize(img, (img.shape[1] * 2, img.shape[0] * 2))
+        output = img.copy()
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img_blur = cv2.GaussianBlur(img_gray, (3, 5), 0)
         ret, thresh = cv2.threshold(img_blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 2))
+        #show_img(thresh)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 2))
         thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 10))
         thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         cv2.imwrite('words/Boxed_ROIs_dilate{}.jpg'.format(i), thresh)
         contours, boxes = sort_x(contours)
-
+        #show_img(thresh)
         for cnt in contours:
             [x, y, w, h] = cv2.boundingRect(cnt)
             if w > 10 or h > 10:
                 roi = img[y:y + h, x:x + w]
-
+                #output = cv2.rectangle(output, (x, y), (x + w, y + h), (0, 0, 255), 1)
                 cv2.imwrite('words/Boxed_ROIs' + str(i) + '.jpg', roi)
                 i += 1
-
+        #show_img(output)
         file_num += 1
         img = cv2.imread(image_path + '\Boxed_ROIs{}.jpg'.format(file_num))
 
@@ -55,10 +57,10 @@ def get_lines(image_path):
     output = img.copy()
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
+    # show_img(thresh)
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (40, 1))
     thresh = cv2.dilate(thresh, kernel, iterations=3)
-
+    # show_img(thresh)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     contours, boxes = sort_y(contours)
     i = 0
@@ -69,7 +71,7 @@ def get_lines(image_path):
             cv2.imwrite('lines/Boxed_ROIs' + str(i) + '.jpg', roi)
             output = cv2.rectangle(output, (x, y), (x + w, y + h), (0, 0, 255), 1)
             i += 1
-
+    # show_img(output)
 
 def get_letters(image_path):
     cwd = os.getcwd()
@@ -84,14 +86,16 @@ def get_letters(image_path):
     file_num = 0
     img = cv2.imread(image_path + '\Boxed_ROIs{}.jpg'.format(file_num))
     while img is not None:
+        output = img.copy()
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img_blur = cv2.GaussianBlur(img_gray, (3, 3), 0)
         ret, thresh = cv2.threshold(img_blur, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+        # show_img(thresh)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         erode = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 10))
         dilate = cv2.morphologyEx(erode, cv2.MORPH_CLOSE, kernel)
-
+        # show_img(dilate)
         cv2.imwrite('letters/Boxed_ROIserode' + str(i) + '.jpg', erode)
         cv2.imwrite('letters/Boxed_ROIsthresh' + str(i) + '.jpg', thresh)
         contours, hierarchy = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -105,12 +109,13 @@ def get_letters(image_path):
                 roi = img[y:y + h, x:x + w]
                 square = square_image(roi)
                 cv2.imwrite('letters/Boxed_ROIs' + str(i) + '.jpg', roi)
+         #       output = cv2.rectangle(output, (x, y), (x + w, y + h), (0, 0, 255), 1)
                 square.save(f'squared/{file_num:04}/{i:04}.jpg')
                 i += 1
 
         file_num += 1
         img = cv2.imread(image_path + '\Boxed_ROIs{}.jpg'.format(file_num))
-
+        #how_img(output)
 
 def show_img(img):
     cv2.imshow("test", img)
