@@ -45,8 +45,6 @@ def bound_region(image_path):
         file_num += 1
         img = cv2.imread(image_path + '\Boxed_ROIs{}.jpg'.format(file_num))
 
-        # show_img(img)
-
 def get_lines(image_path):
     cwd = os.getcwd()
     if os.path.exists('lines'):
@@ -55,29 +53,22 @@ def get_lines(image_path):
 
     img = cv2.imread(image_path)
     output = img.copy()
-    img_sobel = cv2.Sobel(img, cv2.CV_8U, 1, 0)
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (40, 1))
     thresh = cv2.dilate(thresh, kernel, iterations=3)
 
-
-    # show_img(thresh)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     contours, boxes = sort_y(contours)
     i = 0
     for cnt in contours:
         [x, y, w, h] = cv2.boundingRect(cnt)
         if w > 20 or h > 20:
-            #y = y - int(h * 1.1)
-            #h + int(h * 1.1)
             roi = img[y:y + h, x:x + w]
             cv2.imwrite('lines/Boxed_ROIs' + str(i) + '.jpg', roi)
             output = cv2.rectangle(output, (x, y), (x + w, y + h), (0, 0, 255), 1)
             i += 1
-
-    #show_img(output)
 
 
 def get_letters(image_path):
@@ -93,7 +84,6 @@ def get_letters(image_path):
     file_num = 0
     img = cv2.imread(image_path + '\Boxed_ROIs{}.jpg'.format(file_num))
     while img is not None:
-        output = img.copy()
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img_blur = cv2.GaussianBlur(img_gray, (3, 3), 0)
         ret, thresh = cv2.threshold(img_blur, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
