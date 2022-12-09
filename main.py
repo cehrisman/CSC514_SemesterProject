@@ -11,6 +11,7 @@ import torch.utils.data
 from bounds import bound_region, get_letters, get_lines
 import numpy as np
 import cnn
+from torchinfo import summary
 
 """
     parse gathers command line arguments.
@@ -67,7 +68,7 @@ def main():
 
     cnn_model_test = cnn.CNN()
     cnn_model_test.load_state_dict(saved)
-
+    print(summary(cnn_model_test))
     test = cnn.ImageDataSetToClassify()
     test1 = torch.utils.data.DataLoader(test, batch_size=1, shuffle=False)
     cnn.classify(cnn_model_test, test1)

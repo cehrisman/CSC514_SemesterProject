@@ -11,7 +11,6 @@ import os
 import shutil
 
 
-
 def bound_region(image_path):
     cwd = os.getcwd()
     if os.path.exists('words'):
@@ -142,5 +141,5 @@ def square_image(img):
 
     result = Image.new(img.mode, (new_width, new_height), (255, 255, 255))
     result.paste(img, ((mx - height) // 2, (mx - width) // 2))
-    result = result.resize((128, 128), resample=Image.Resampling.BICUBIC)
+    result = result.resize((128, 128), resample=Image.BICUBIC)
     return result
