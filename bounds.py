@@ -7,12 +7,9 @@ This file contains the code to identify regions of interest for text.
 """
 import cv2
 from PIL import Image
-import numpy as np
 import os
 import shutil
-import glob
-from tensorflow.keras.preprocessing import image
-from matplotlib import pyplot as plt
+
 
 
 def bound_region(image_path):
@@ -29,13 +26,11 @@ def bound_region(image_path):
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img_blur = cv2.GaussianBlur(img_gray, (3, 5), 0)
         ret, thresh = cv2.threshold(img_blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        #show_img(thresh)
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 2))
         thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 10))
         thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        # show_img(thresh)
         cv2.imwrite('words/Boxed_ROIs_dilate{}.jpg'.format(i), thresh)
         contours, boxes = sort_x(contours)
 
@@ -102,17 +97,10 @@ def get_letters(image_path):
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img_blur = cv2.GaussianBlur(img_gray, (3, 3), 0)
         ret, thresh = cv2.threshold(img_blur, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-        #show_img(thresh)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         erode = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-        # erode = cv2.erode(thresh, kernel, iterations=1)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 10))
-        #  = cv2.dilate(erode, kernel, iterations=1)
         dilate = cv2.morphologyEx(erode, cv2.MORPH_CLOSE, kernel)
-        # thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-        #show_img(erode)
-        # show_img(dilate)
-        #cv2.imwrite('letters/Boxed_ROIsdilate' + str(i) + '.jpg', dilate)
 
         cv2.imwrite('letters/Boxed_ROIserode' + str(i) + '.jpg', erode)
         cv2.imwrite('letters/Boxed_ROIsthresh' + str(i) + '.jpg', thresh)
